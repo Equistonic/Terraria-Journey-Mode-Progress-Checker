@@ -14,7 +14,7 @@ import base64
 DECYPHER_KEY = "68 00 33 00 79 00 5F 00 67 00 55 00 79 00 5A 00"
 SAVE_FILE_PATH = {
     os.path.join(os.getenv("USERPROFILE"), "Documents", "My Games", "Terraria", "Players"),
-    os.path.join(os.getenv("USERPROFILE"), "OneDrive", "Documents", "My Games", "Terraria", "Players")
+    os.path.join(os.getenv("USERPROFILE"), "OneDrive", "Documents", "My Games", "Terraria", "Players"),
 }
 ALL_RESEARCHABLE_ITEMS: dict[int, tuple[str, int]] = {} # ID -> (Name, # to research)
 DELIMITER = "|"
@@ -31,12 +31,24 @@ def load_researchable_items() -> None:
     try:
         with open("RESEARCH_ITEMS.txt", "r") as file:
             for line in file:
-                stripped = line.strip(DELIMITER)
+                stripped = line.split(DELIMITER)
+
+                # skip empty lines or malformed lines
+                if line == "\n" or len(stripped) != 3:
+                    continue
+
+                if stripped[2][-1] == "\n":
+                    stripped[2] = stripped[2][:-1]
                 
                 # insert item data
                 ALL_RESEARCHABLE_ITEMS.update(
-                    { int(stripped[0]), tuple(stripped[1], int(stripped(2) ) ) }
+                    { int(stripped[0]): (stripped[1], int(stripped[2])) }
                 )
+
+                # print item data for debug
+                # print(f"Loaded research item: ID={stripped[0]}, Name={stripped[1]}, Research Count={stripped[2]}")
+            
+            print(f"Loaded {len(ALL_RESEARCHABLE_ITEMS)} researchable items.")
     except FileNotFoundError:
         print("Could not locate research items file: \"RESEARCH_ITEMS.txt\"")
 
@@ -57,8 +69,51 @@ def prompt_yn(prompt: str) -> bool:
             print("Please enter either Y or N.")
 
 
+def is_player_backup(file_name: str) -> bool:
+    return file_name.endswith(".plr.bak")
+
+
+def is_player_save(file_name: str) -> bool:
+    return file_name.endswith(".plr")
+
+
 def determine_save_path() -> str:
+    print("Determining save file path...")
+
     chosen_path: str = ""
+
+    # user manual check (optional)
+    manual_check: bool = prompt_yn("Would you like to manually check the save directories?")
+    cloud_save_check:bool = prompt_yn("Will you be checking a cloud save?")
+
+    if cloud_save_check:
+        # C:\Program Files (x86)\Steam\userdata\USERID\105600\remote
+        print("Need help finding your Steam User ID? Visit: https://help.steampowered.com/en/faqs/view/2BDB-1D8B-4E21-9A3F-9C9B/")
+        steam_user_id: int = -1
+        valid_id: bool = False
+        while not valid_id:
+            try:
+                steam_user_id = int(input("Enter your Steam User ID: "))
+                valid_id = True
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+        # default cloud save path
+        cloud_save_path: str = os.path.join("C:\\", "Program Files (x86)", "Steam", "userdata", str(steam_user_id), "105600", "remote", "players")
+        if does_path_exist(cloud_save_path):
+            print("Cloud save directory found: ", cloud_save_path)
+            if manual_check:
+                print_directory_contents(cloud_save_path)
+                user_choice: bool = prompt_yn("Is this the correct cloud save directory?")
+                if not user_choice:
+                    print("Please ensure you have entered the correct Steam User ID and that your cloud saves are properly synced.")
+                    exit(0)
+
+            return cloud_save_path
+        else:
+            print("Cloud save directory not found at: ", cloud_save_path)
+            print("Please ensure you have entered the correct Steam User ID and that your cloud saves are properly synced.")
+            return ""
 
     # determine save path
     for path in SAVE_FILE_PATH:
@@ -71,9 +126,6 @@ def determine_save_path() -> str:
 
         if is_save_path:
             chosen_path = path
-    
-    # user manual check (optional)
-    manual_check: bool = prompt_yn("Would you like to manually check these directories?")
 
     # only check for yes, skip if no
     if manual_check:
@@ -92,9 +144,7 @@ def determine_save_path() -> str:
 
     print("Selected path:", chosen_path, "\n")
 
-    # get specific save
-    save_path: str = get_save(chosen_path)
-    return save_path
+    return chosen_path
 
 
 # Name: does_path_exist(path: str) -> bool
@@ -130,7 +180,7 @@ def get_save(save_location: str) -> str:
     if not does_path_exist(save_location):
         return ""
     
-    print("Available saves in directory:", save_location)
+    print("\nAvailable saves in directory:", save_location)
     saves = os.listdir(save_location)
     for index, save in enumerate(saves):
         print(f"[{index}] {save}")
@@ -193,7 +243,7 @@ class PlayerProgress:
 class Tracker:
     def __init__(self):
         self.m_player_progress: dict[str, PlayerProgress] = {}
-        self.m_save_directory: str = None;
+        self.m_save_directory: str = determine_save_path()
     
         # load researchable items from file
         load_researchable_items()
@@ -205,7 +255,15 @@ class Tracker:
         else:
             print("Invalid save directory: ", save_directory)
 
-    def add_player(self, player_name):
+    def add_player(self):
+        # get save file path for player
+        save_path: str = get_save(self.m_save_directory)
+        if save_path == "" or not does_path_exist(save_path):
+            print("Invalid save path for player: ", player_name)
+            return
+        
+        player_name: str = os.path.basename(save_path).split(".")[0]
+
         if player_name not in self.m_player_progress:
             self.m_player_progress[player_name] = PlayerProgress(player_name)
         else:
