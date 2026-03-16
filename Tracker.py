@@ -16,7 +16,7 @@ SAVE_FILE_PATH = {
     os.path.join(os.getenv("USERPROFILE"), "Documents", "My Games", "Terraria", "Players"),
     os.path.join(os.getenv("USERPROFILE"), "OneDrive", "Documents", "My Games", "Terraria", "Players")
 }
-ALL_RESEARCHABLE_ITEMS = {}
+ALL_RESEARCHABLE_ITEMS: dict[int, tuple[str, int]] = {} # ID -> (Name, # to research)
 DELIMITER = "|"
 
 
@@ -29,8 +29,14 @@ DELIMITER = "|"
 def load_researchable_items() -> None:
     # line format: ID|Name|Internal Name
     try:
-        with open("RESEARCH_ITEMS.txt", "r"):
-            pass
+        with open("RESEARCH_ITEMS.txt", "r") as file:
+            for line in file:
+                stripped = line.strip(DELIMITER)
+                
+                # insert item data
+                ALL_RESEARCHABLE_ITEMS.update(
+                    { int(stripped[0]), tuple(stripped[1], int(stripped(2) ) ) }
+                )
     except FileNotFoundError:
         print("Could not locate research items file: \"RESEARCH_ITEMS.txt\"")
 
@@ -188,6 +194,9 @@ class Tracker:
     def __init__(self):
         self.m_player_progress: dict[str, PlayerProgress] = {}
         self.m_save_directory: str = None;
+    
+        # load researchable items from file
+        load_researchable_items()
 
     def set_save_directory(self, save_directory: str):
         if does_path_exist(save_directory):
