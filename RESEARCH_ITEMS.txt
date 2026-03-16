@@ -1792,11 +1792,6 @@
 1800|Bat Hook|1
 1801|Bat Scepter|1
 1802|Raven Staff|1
-1803|Jungle Key Mold|n/a
-1804|Corruption Key Mold|n/a
-1805|Crimson Key Mold|n/a
-1806|Hallowed Key Mold|n/a
-1807|Frozen Key Mold|n/a
 1808|Hanging Jack 'O Lantern|1
 1809|Rotten Egg|99
 1810|Unlucky Yarn|1
@@ -2880,7 +2875,6 @@
 2900|Blue Armored Bones Banner|1
 2901|Blue Cultist Archer Banner|1
 2902|Lunatic Devotee Banner|1
-2903|Blue Cultist Fighter Banner|n/a
 2904|Bone Lee Banner|1
 2905|Clinger Banner|1
 2906|Cochineal Beetle Banner|1
@@ -2966,9 +2960,6 @@
 2986|Tim Banner|1
 2987|Undead Miner Banner|1
 2988|Undead Viking Banner|1
-2989|White Cultist Archer Banner|n/a
-2990|White Cultist Caster Banner|n/a
-2991|White Cultist Fighter Banner|n/a
 2992|Yellow Slime Banner|1
 2993|Yeti Banner|1
 2994|Zombie Elf Banner|1
@@ -3308,7 +3299,6 @@
 3328|Treasure Bag (Plantera)|3
 3329|Treasure Bag (Golem)|3
 3330|Treasure Bag (Duke Fishron)|3
-3331|Treasure Bag (Lunatic Cultist)|n/a
 3332|Treasure Bag (Moon Lord)|3
 3333|Hive Pack|1
 3334|Yoyo Glove|1
@@ -3375,13 +3365,11 @@
 3395|Creature From The Deep Banner|1
 3396|Dr. Man Fly Banner|1
 3397|Mothron Banner|1
-3398|Severed Hand Banner|n/a
 3399|The Possessed Banner|1
 3400|Butcher Banner|1
 3401|Psycho Banner|1
 3402|Deadly Sphere Banner|1
 3403|Nailhead Banner|1
-3404|Poisonous Spore Banner|n/a
 3405|Medusa Banner|1
 3406|Hoplite Banner|1
 3407|Granite Elemental Banner|1
@@ -3791,7 +3779,6 @@
 3819|Flameburst Cane|1
 3820|Flameburst Staff|1
 3821|Ale Tosser|1
-3822|Etherian Mana|n/a
 3823|Brand of the Inferno|1
 3824|Ballista Rod|1
 3825|Ballista Cane|1
