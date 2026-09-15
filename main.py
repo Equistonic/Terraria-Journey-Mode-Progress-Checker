@@ -22,6 +22,8 @@ def present_main_menu() -> int:
             continue
         else:
             return user_choice
+        
+    return 0
 
 
 # ==[ MAIN ]==
